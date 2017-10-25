@@ -1,14 +1,13 @@
 import React from 'react'
 import Header from './components/header-component/header'
-import Progress from './components/progress-component/progress'
+import Player from './page/player'
 import {MUSIC_DATA_LIST} from './data/music-data'
 
 class Root extends React.Component {
     constructor(props, context) {
         super(props, context);
-
         this.state = {
-            progress: '-'
+            currentMusicItem: MUSIC_DATA_LIST[0]
         }
     }
 
@@ -16,33 +15,22 @@ class Root extends React.Component {
         $('#player').jPlayer({
             ready: function() {
                 $(this).jPlayer('setMedia', {
-                    mp3: MUSIC_DATA_LIST[0].file
+                    mp3: "http://oj4t8z2d5.bkt.clouddn.com/%E6%88%90%E9%83%BD.mp3"
                 }).jPlayer('play');
             },
             supplied: 'mp3',
             wmode: 'window'
         });
-        $('#player').bind($.jPlayer.event.timeupdate, (e) => {
-            this.setState({
-                progress: e.jPlayer.status.currentPercentAbsolute
-            })
-        })
     }
 
     componentWillUnMount() {
-        $('#player').unbind($.jPlayer.event.timeupdate)
-    }
-
-    progressChangeHandler(progress) {
-        $('#player').jPlayer("playHead", progress * 100)
     }
 
     render() {
         return(
             <div>
                 <Header />
-                <Progress progress={this.state.progress} onProgressChange={this.progressChangeHandler} barColor="#ff0000">
-                </Progress>
+                <Player currentMusicItem={this.state.currentMusicItem}/>
             </div>
         )
     }
