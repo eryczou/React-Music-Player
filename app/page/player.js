@@ -51,7 +51,7 @@ class Player extends React.Component {
     render() {
         return(
             <div className="player-page">
-                <h1 className="caption">我的播放清单</h1>
+                <h1 className="caption"><a>我的歌曲播放清单</a></h1>
                 <div className="player-wrapper">
                     <div className="control-wrapper">
                         <h2 className="music-title">{this.props.currentMusicItem.title}</h2>

@@ -1,13 +1,16 @@
 import React from 'react'
 import Header from './components/header-component/header'
+import MusicList from './page/musiclist'
 import Player from './page/player'
 import {MUSIC_DATA_LIST} from './data/music-data'
+import './root.less'
 
 class Root extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            currentMusicItem: MUSIC_DATA_LIST[0]
+            musicList : MUSIC_DATA_LIST,
+            currentMusicItem: MUSIC_DATA_LIST[1]
         }
     }
 
@@ -30,7 +33,8 @@ class Root extends React.Component {
         return(
             <div>
                 <Header />
-                <Player currentMusicItem={this.state.currentMusicItem}/>
+                <MusicList currentMusicItem = {this.state.currentMusicItem} musicList = {this.state.musicList} />
+                {/* <Player currentMusicItem = {this.state.currentMusicItem} /> */}
             </div>
         )
     }
