@@ -1,8 +1,10 @@
-import React from 'react'
+import React, {Component} from 'react'
 import Progress from '../components/progress-component/progress'
+import { Link } from 'react-router-dom'
+import PubSub from 'pubsub-js'
 import './player.less'
 
-class Player extends React.Component {
+class Player extends Component {
     constructor(props, context) {
         super(props, context);
 
@@ -43,15 +45,28 @@ class Player extends React.Component {
             $('#player').jPlayer("play")  
         }
 
-        this.setState({
-            isPlay : !this.state.isPlay
-        })
+        this.setState((prevState) => {
+                return {
+                    isPlay : !prevState.isPlay
+                }
+            }
+        )
+    }
+
+    playNext(type = 'next') {
+        if (type === 'next') {
+            PubSub.publish('PLAY_NEXT_MUSIC')
+        } else if (type === 'prev' ){
+            PubSub.publish('PLAY_PREV_MUSIC')
+        } else {
+            console.log('error on playnext')
+        }
     }
 
     render() {
         return(
             <div className="player-page">
-                <h1 className="caption"><a>我的歌曲播放清单</a></h1>
+                <h1 className="caption"><Link to="/list">我的歌曲播放清单</Link></h1>
                 <div className="player-wrapper">
                     <div className="control-wrapper">
                         <h2 className="music-title">{this.props.currentMusicItem.title}</h2>
@@ -68,9 +83,9 @@ class Player extends React.Component {
                             <Progress progress={this.state.progress} onProgressChange=  {this.progressChangeHandler} barColor="#ff0000">
                             </Progress>
                         </div>
-                        <i className="play-backward fa fa-backward fa-2x" aria-hidden="true"></i>
+                        <i onClick={this.playNext.bind(this, 'prev')} className="play-backward fa fa-backward fa-2x" aria-hidden="true"></i>
                         <i className={`fa fa-2x ${this.state.isPlay?'pause fa-pause':'play fa-play'}`} aria-hidden="true" onClick={this.play.bind(this)}></i>
-                        <i className="play-forward fa fa-forward fa-2x" aria-hidden="true"></i>
+                        <i onClick={this.playNext.bind(this, 'next')} className="play-forward fa fa-forward fa-2x" aria-hidden="true"></i>
                         <i className="random-play fa fa-random fa-2x" aria-hidden="true"></i>
                         <i className="repeat-play fa fa-repeat fa-2x" aria-hidden="true"></i>
                     </div>

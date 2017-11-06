@@ -1,7 +1,7 @@
-import React from 'react'
+import React, {Component} from 'react'
 import './progress.less'
 
-class Progress extends React.Component {
+class Progress extends Component {
     changeProgressBar(e) {
         let progressBar = this.refs.progressBar;
         let playedProgressLength = e.clientX - progressBar.getBoundingClientRect().left
@@ -13,9 +13,10 @@ class Progress extends React.Component {
 
     render() {
         return (
-            <div className="component-progress" ref="progressBar" onClick=          {this.changeProgressBar.bind(this)}>
-                <div className="current-progress" style={{width: `${this.props.progress}%`, background: this.props.barColor
-            }}></div>
+            <div className="component-progress" ref="progressBar" onClick={this.changeProgressBar.bind(this)}>
+                    <div className="current-progress" 
+                        style={{width: `${this.props.progress}%`, background: this.props.barColor}}>
+                    </div>
             </div>
         )
     }
