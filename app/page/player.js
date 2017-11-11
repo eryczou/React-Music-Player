@@ -13,7 +13,7 @@ class Player extends Component {
             progress: 0,
             isPlay: true,
             remainingTime: '-',
-            playMode: '-',
+            playMode: 'REPEAT',
             isMute: false
         }
     }
@@ -67,11 +67,8 @@ class Player extends Component {
         }
 
         this.setState((prevState) => {
-                return {
-                    isPlay : !prevState.isPlay
-                }
-            }
-        )
+            return { isPlay : !prevState.isPlay }
+        })
     }
 
     playNext(type = 'next') {
@@ -84,12 +81,18 @@ class Player extends Component {
         }
     }
 
-    randomPlay() {
-        PubSub.publish('RANDOM')
-    }
-
-    repeatPlay() {
-
+    togglePlayMode() {
+        if (this.state.playMode === 'RANDOM') {
+            PubSub.publish('REPEAT_PLAY')
+            this.setState((prevState) => {
+                return {playMode:'REPEAT'}
+            })
+        } else {
+            PubSub.publish('RANDOM_PLAY')
+            this.setState((prevState) => {
+                return {playMode:'RANDOM'}
+            })
+        }
     }
 
     render() {
@@ -115,8 +118,7 @@ class Player extends Component {
                         <i onClick={this.playNext.bind(this, 'prev')} className="play-backward fa fa-backward fa-2x" aria-hidden="true"></i>
                         <i className={`fa fa-2x ${this.state.isPlay?'pause fa-pause':'play fa-play'}`} aria-hidden="true" onClick={this.play.bind(this)}></i>
                         <i onClick={this.playNext.bind(this, 'next')} className="play-forward fa fa-forward fa-2x" aria-hidden="true"></i>
-                        <i onClick={this.randomPlay.bind(this)} className="random-play fa fa-random fa-2x" aria-hidden="true"></i>
-                        <i onClick={this.repeatPlay.bind(this)} className="repeat-play fa fa-repeat fa-2x" aria-hidden="true"></i>
+                        <i onClick={this.togglePlayMode.bind(this)} className={`play-mode fa fa-2x ${this.state.playMode == 'REPEAT' ? 'fa-repeat' : 'fa-random'}`} aria-hidden="true"></i>
                     </div>
                     <img className="cover" src={this.props.currentMusicItem.cover} alt={this.props.currentMusicItem.title}/>
                 </div>

@@ -11,7 +11,8 @@ class Root extends Component {
         super(props, context);
         this.state = {
             musicList : MUSIC_DATA_LIST,
-            currentMusicItem: MUSIC_DATA_LIST[0]
+            currentMusicItem: MUSIC_DATA_LIST[0],
+            playMode : 'REPEAT'
         }
     }
 
@@ -40,6 +41,17 @@ class Root extends Component {
         this.playMusic(this.state.musicList[newIndex]);
     }
 
+    playRandomNext() {
+        let index = this.findMusicIndex(this.state.currentMusicItem);
+        let musicListLength = this.state.musicList.length;
+        let newIndex = null;
+
+        do 
+            newIndex = Math.floor(Math.random()*musicListLength);
+        while(newIndex == index)
+        this.playMusic(this.state.musicList[newIndex]);
+    }
+
     findMusicIndex(musicItem) {
         return this.state.musicList.indexOf(musicItem)
     }
@@ -51,16 +63,16 @@ class Root extends Component {
         });
         this.playMusic(this.state.currentMusicItem)
         $('#player').bind($.jPlayer.event.ended, (e) => {
-            this.playNext()
+            this.determineNextPlayLogic();
         })
         PubSub.subscribe('PLAY_MUSIC', (msg, musicItem) => {
             this.playMusic(musicItem)
         });
         PubSub.subscribe('PLAY_NEXT_MUSIC', (msg) => {
-            this.playNext()
+            this.determineNextPlayLogic();
         });
         PubSub.subscribe('PLAY_PREV_MUSIC', (msg) => {
-            this.playNext('prev')
+            this.determineNextPlayLogic('prev');
         });
         PubSub.subscribe('DELETE_MUSIC', (msg, musicItem) => {
             this.setState((prevState) => {
@@ -71,6 +83,16 @@ class Root extends Component {
                 }
             })
         });
+        PubSub.subscribe('RANDOM_PLAY', (msg) => {
+            this.setState((prevState) =>{
+                return {playMode : 'RANDOM'}
+            })
+        })
+        PubSub.subscribe('REPEAT_PLAY', (msg) => {
+            this.setState((prevState) =>{
+                return {playMode : 'REPEAT'}
+            })
+        })
     }
 
     componentWillUnMount() {
@@ -78,7 +100,17 @@ class Root extends Component {
         PubSub.unSubscribe('DELETE_MUSIC');
         PubSub.unSubscribe('PLAY_NEXT_MUSIC');
         PubSub.unSubscribe('PLAY_PREV_MUSIC');
+        PubSub.unSubscribe('RANDOM_PLAY');
+        PubSub.unSubscribe('REPEAT_PLAY');
         $('#player').unbind($.jPlayer.event.ended);
+    }
+
+    determineNextPlayLogic(type) {
+        if (this.state.playMode === 'RANDOM') {
+            this.playNext(type)
+        } else if (this.state.playMode === 'REPEAT') {
+            this.playRandomNext();
+        }
     }
 
     render() {
