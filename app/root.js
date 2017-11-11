@@ -19,6 +19,7 @@ class Root extends Component {
         $('#player').jPlayer('setMedia', {
             mp3: item.file
         }).jPlayer('play');
+        document.title = `${item.title} - ${item.artist}`
         this.setState({
             currentMusicItem:item
         })

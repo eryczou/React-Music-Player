@@ -49,15 +49,15 @@
 
             .volume-control {
                 margin-left: 30px;
-                width: 80px;
+                width: 180px;
                 height: 20;
                 line-height: 20px;
                 display: inline-block;
 
-                img {
+                i {
                     display: inline-block;
                     width: 18px;
-                    margin-right: 7px;
+                    margin-right: 25px;
                 }
 
                 div {
@@ -115,7 +115,13 @@
             width: 160px;
             height: 160px;
             border-radius: 50%;
+            -webkit-animation:spin 15s linear infinite;
+            -moz-animation:spin 15s linear infinite;
+            animation:spin 15s linear infinite;
         }
+        @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+        @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
     }
 }
 

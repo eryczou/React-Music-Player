@@ -12,18 +12,28 @@ class Player extends Component {
             volume: 0,
             progress: 0,
             isPlay: true,
-            remainingTime: '-'
+            remainingTime: '-',
+            playMode: '-',
+            isMute: false
         }
     }
 
     componentDidMount() {
         $('#player').bind($.jPlayer.event.timeupdate, (e) => {
+            let duration = e.jPlayer.status.duration;
             this.setState({
                 volume: e.jPlayer.options.volume * 100,
                 progress: e.jPlayer.status.currentPercentAbsolute,
-                remainingTime: (e.jPlayer.status.currentTime) / 60
+                remainingTime: this.formatTime(duration * (1 - e.jPlayer.status.currentPercentAbsolute/100))
             })
         })
+    }
+
+    formatTime(time) {
+        let minute = Math.floor( time / 60 );
+        let second = Math.floor( time % 60 );
+        second = second < 10 ? `0${second}` : second;
+        return `${minute}:${second}`
     }
 
     componentWillUnMount() {
@@ -32,6 +42,17 @@ class Player extends Component {
 
     progressChangeHandler(progress) {
         $('#player').jPlayer("playHead", progress * 100)
+    }
+
+    toggleMute() {
+        if (this.state.isMute) {
+            $('#player').jPlayer("unmute")
+        } else {
+            $('#player').jPlayer("mute")
+        }
+        this.setState((prevState) => {
+            return { isMute : !prevState.isMute }
+        })
     }
 
     volumeChangeHandler(progress) {
@@ -63,6 +84,14 @@ class Player extends Component {
         }
     }
 
+    randomPlay() {
+        PubSub.publish('RANDOM')
+    }
+
+    repeatPlay() {
+
+    }
+
     render() {
         return(
             <div className="player-page">
@@ -71,9 +100,9 @@ class Player extends Component {
                     <div className="control-wrapper">
                         <h2 className="music-title">{this.props.currentMusicItem.title}</h2>
                         <h3 className="music-artist">{this.props.currentMusicItem.artist}</h3>
-                        <div className="remaining-time">{this.state.remainingTime}</div>
+                        <div className="remaining-time">-{this.state.remainingTime}</div>
                         <div className="volume-control">
-                            <img src="../../static/img/volume.png" />
+                            <i className={`fa fa-2x ${this.state.isMute?'fa-volume-off':'fa-volume-up'}`} aria-hidden="true" onClick={this.toggleMute.bind(this)}/>
                             <div>
                                 <Progress progress={this.state.volume} onProgressChange=  {this.volumeChangeHandler} barColor="#aaa">
                                 </Progress>
@@ -86,8 +115,8 @@ class Player extends Component {
                         <i onClick={this.playNext.bind(this, 'prev')} className="play-backward fa fa-backward fa-2x" aria-hidden="true"></i>
                         <i className={`fa fa-2x ${this.state.isPlay?'pause fa-pause':'play fa-play'}`} aria-hidden="true" onClick={this.play.bind(this)}></i>
                         <i onClick={this.playNext.bind(this, 'next')} className="play-forward fa fa-forward fa-2x" aria-hidden="true"></i>
-                        <i className="random-play fa fa-random fa-2x" aria-hidden="true"></i>
-                        <i className="repeat-play fa fa-repeat fa-2x" aria-hidden="true"></i>
+                        <i onClick={this.randomPlay.bind(this)} className="random-play fa fa-random fa-2x" aria-hidden="true"></i>
+                        <i onClick={this.repeatPlay.bind(this)} className="repeat-play fa fa-repeat fa-2x" aria-hidden="true"></i>
                     </div>
                     <img className="cover" src={this.props.currentMusicItem.cover} alt={this.props.currentMusicItem.title}/>
                 </div>
