@@ -1,1 +1,0 @@
-This is a project for React Music Player
